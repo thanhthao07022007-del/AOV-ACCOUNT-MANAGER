@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản lý tài khoản AOV</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 20px;
+  background: #101522;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  text-align: center;
+  color: #00d9ff;
+}
+
+.card {
+  background: #1d293b;
+  padding: 18px;
+  border-radius: 15px;
+  margin-top: 20px;
+}
+
+input, textarea, button {
+  width: 100%;
+  padding: 13px;
+  margin: 7px 0;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+input, textarea {
+  background: #303e52;
+  color: white;
+}
+
+button {
+  background: #00a9d6;
+  color: white;
+  font-weight: bold;
+}
+
+.item {
+  background: #303e52;
+  padding: 14px;
+  border-radius: 10px;
+  margin-top: 12px;
+  overflow-wrap: anywhere;
+}
+
+.delete {
+  background: #d83c50;
+}
+</style>
+</head>
+
+<body>
+
+<h1>⚡ AOV MANAGER</h1>
+
+<div class="card">
+  <h3>Thêm tài khoản</h3>
+
+  <input id="name" placeholder="Tên tài khoản">
+
+  <input id="uid" placeholder="UID Liên Quân">
+
+  <input id="status" placeholder="Trạng thái">
+
+  <textarea id="note" placeholder="Ghi chú"></textarea>
+
+  <button onclick="addAccount()">
+    THÊM TÀI KHOẢN
+  </button>
+</div>
+
+<div class="card">
+  <h3>Danh sách tài khoản</h3>
+  <div id="list"></div>
+</div>
+
+<script>
+let accounts = JSON.parse(
+  localStorage.getItem("aov_accounts") || "[]"
+);
+
+function save() {
+  localStorage.setItem(
+    "aov_accounts",
+    JSON.stringify(accounts)
+  );
+  display();
+}
+
+function addAccount() {
+  let name = document.getElementById("name").value.trim();
+  let uid = document.getElementById("uid").value.trim();
+  let status = document.getElementById("status").value.trim();
+  let note = document.getElementById("note").value.trim();
+
+  if (!name || !uid) {
+    alert("Hãy nhập tên và UID!");
+    return;
+  }
+
+  accounts.push({ name, uid, status, note });
+
+  save();
+
+  document.querySelectorAll("input, textarea")
+    .forEach(element => element.value = "");
+}
+
+function display() {
+  let list = document.getElementById("list");
+  list.innerHTML = "";
+
+  accounts.forEach((account, index) => {
+    let item = document.createElement("div");
+    item.className = "item";
+
+    let title = document.createElement("h3");
+    title.textContent = account.name;
+
+    let uid = document.createElement("p");
+    uid.textContent = "UID: " + account.uid;
+
+    let status = document.createElement("p");
+    status.textContent = "Trạng thái: " + account.status;
+
+    let note = document.createElement("p");
+    note.textContent = "Ghi chú: " + account.note;
+
+    let remove = document.createElement("button");
+    remove.className = "delete";
+    remove.textContent = "XÓA TÀI KHOẢN";
+
+    remove.onclick = function() {
+      if (confirm("Bạn muốn xóa tài khoản này?")) {
+        accounts.splice(index, 1);
+        save();
+      }
+    };
+
+    item.append(title, uid, status, note, remove);
+    list.appendChild(item);
+  });
+}
+
+display();
+</script>
+
+</body>
+  </html>
+  
